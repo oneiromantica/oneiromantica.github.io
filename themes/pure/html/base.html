@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{title}}{% block subtitle %}{% endblock %}</title>
+    {% block meta %}
+    <meta name="description" content="{{description}}" />
+    <meta name="keywords" content="" />
+    {% endblock %}
+    <link rel="canonical" href="{{site-url}}{{uri}}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    />
+
+    <!-- Place favicon.ico in the root directory -->
+    {% script "js/prism.js" %}
+    <!-- -->
+    {% style "css/prism.css" %}
+    <!-- -->
+    {% style "css/milligram.min.css" %}
+    <!-- -->
+    {% style "css/screen.css" %}
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="navigation">
+        <nav class="navbar pure-menu-horizontal">
+          <a href="/" class="pure-menu-heading">{{title}}</a>
+          <ul class="pure-menu-list">
+            <li
+              class="
+                pure-menu-item
+                {%
+                if
+                archives
+                %}
+                pure-menu-selected
+                {%
+                endif
+                %}
+              "
+            >
+              <a class="pure-menu-link" href="{{archives-uri}}">Code</a>
+            </li>
+            {% for nav-page in navbar-pages %}
+            <li
+              class="
+                pure-menu-item
+                {%
+                ifequal
+                page.uri
+                nav-page.uri
+                %}
+                pure-menu-selected
+                {%
+                endifequal
+                %}
+              "
+            >
+              <a class="pure-menu-link" href="{{nav-page.uri}}"
+                >{{nav-page.title}}</a
+              >
+            </li>
+            {% endfor %}
+          </ul>
+        </nav>
+      </header>
+      <main class="content container">{% block content %} {% endblock %}</main>
+      <footer class="footer">
+        <span id="copyright" />
+      </footer>
+    </div>
+  </body>
+  <script>
+    document.getElementById(
+      "copyright"
+    ).textContent = `\u00A9 ${new Date().getFullYear()} by {{author}}`;
+  </script>
+</html>
