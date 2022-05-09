@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lambda Library: AOC2021 Day 1 - Haskell</title>
+    
+<meta name="keywords" content="clojure,codewars,aoc,haskell,aoc2021">
+
+<meta name="description" content="I decided to use AOC2021 to start learning some Haskell.
+The hardest part for me was figuring out how to do proper IO, as it is contagious, but if you&#39;ve ever been a Haskell beginner, then I&#39;m not telling any news.The problem">
+
+<meta property="og:description" content="I decided to use AOC2021 to start learning some Haskell.
+The hardest part for me was figuring out how to do proper IO, as it is contagious, but if you&#39;ve ever been a Haskell beginner, then I&#39;m not telling any news.The problem">
+
+<meta property="og:url" content="https://oneiromantica.github.io/posts/2014-03-10-first-post/" />
+<meta property="og:title" content="AOC2021 Day 1 - Haskell" />
+<meta property="og:type" content="article" />
+
+    <link rel="canonical" href="https://oneiromantica.github.io/posts/2014-03-10-first-post/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    />
+
+    <!-- Place favicon.ico in the root directory -->
+    <script src="/js/prism.js" type="application/javascript"></script>
+    <!-- -->
+    <link href="/css/prism.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/milligram.min.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="navigation">
+        <nav class="navbar pure-menu-horizontal">
+          <a href="/" class="pure-menu-heading">Lambda Library</a>
+          <ul class="pure-menu-list">
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/archives/">Code</a>
+            </li>
+            
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/pages/about/"
+                >About</a
+              >
+            </li>
+            
+          </ul>
+        </nav>
+      </header>
+      <main class="content container">
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">10 March 2014</div>
+        
+    </div>
+    <h2>AOC2021 Day 1 - Haskell</h2>
+</div>
+<div>
+    
+    <p>I decided to use AOC2021 to start learning some Haskell.<br />
+The hardest part for me was figuring out how to do proper IO, as it is contagious, but if you've ever been a Haskell beginner, then I'm not telling any news.</p><h3 id="the-problem">The problem</h3><p>The problem itself is a straightforward one: count ascending number in part a) and triplets of ascending numbers in part b).</p><h3 id="my-solution">My solution</h3><p>A simple and naive approach to do that is to use partitioning/windowing, so we can easily reason about those n-tuples.<br />
+Clojure has the nice <code>partition</code> core function for that, but Prelude does not seem to provide one, so that's the first helper I'll create
+(it will return arrays of length <code>n</code> instead of n-tuples).<br />
+The next helpers are <code>readInt</code>, which just attaches a type to <code>read</code>, and <code>getInput</code>, which handles opening the file and splitting the string.
+Notice the <code>&lt;$&gt;</code>, binding a pure function to the IO monad's value.</p><pre><code class="language-haskell">module D1 where
+
+partition :: Int -&gt; Int -&gt; [a] -&gt; [[a]]
+partition _ _    [] = []
+partition n step xs = take n xs : partition n step (drop step xs)
+
+getInput :: String -&gt; IO [Integer]
+getInput fname = map readInt . words &lt;$&gt; readFile fname
+
+readInt :: String -&gt; Integer
+readInt = read
+
+isAscending :: (Num a, Ord a) =&gt; [a] -&gt; Bool
+isAscending = go True
+ where
+  go res (a : b : ys) = res &amp;&amp; go (a &lt; b) (b : ys)
+  go res _            = res
+
+-- The test input is small enough to just copy-paste it here
+input = [199, 200, 208, 210, 200, 207, 240, 269, 260, 263] :: [Integer]
+
+solveA :: [Integer] -&gt; Int
+solveA =
+  length . filter isAscending . filter (\x -&gt; length x == 2) . partition 2 1
+
+solveB :: [Integer] -&gt; Int
+solveB =
+  length
+    . filter isAscending
+    . filter (\x -&gt; length x == 2)
+    . partition 2 1
+    . map sum
+    . partition 3 1
+</code></pre><p>Notice that both solutions need to filter windows of size 2, because the <code>partition</code> function will
+finish with windows of less-than-<code>n</code> elements when it reaches the end. This does not matter for measuring
+increasing values, but will cause problems when trying to compare tuple values when the input is of length 1.
+I then read the results from the REPL by entering <code>solveA &lt;$&gt; getInput "&lt;file-name&gt;"</code>.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags/aoc/">aoc</a>
+    
+    <a href="/tags/haskell/">haskell</a>
+    
+    <a href="/tags/aoc2021/">aoc2021</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts/2022-03-28-codewars-multiples-of-3-or-5/">&laquo; Codewars: Multiples of 3 or 5 - Clojure</a>
+        
+        
+    </div>
+
+    
+
+
+</div>
+</main>
+      <footer class="footer">
+        <span id="copyright" />
+      </footer>
+    </div>
+  </body>
+  <script>
+    document.getElementById(
+      "copyright"
+    ).textContent = `\u00A9 ${new Date().getFullYear()} by oneiromantica`;
+  </script>
+</html>

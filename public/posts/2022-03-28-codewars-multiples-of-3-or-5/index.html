@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lambda Library: Codewars: Multiples of 3 or 5 - Clojure</title>
+    
+<meta name="keywords" content="clojure,codewars,aoc,haskell,aoc2021">
+
+<meta name="description" content="An easy problem, and like most data stream processing problems a
+perfect fit for functional programming.There are multiple possible solutions on how to implement the filtering. I
+chose one that reads closely to the problem instruction.
+The question whether to reduce or to apply a variadic function is for
+wiser people to discuss, both produce the same result.">
+
+<meta property="og:description" content="An easy problem, and like most data stream processing problems a
+perfect fit for functional programming.There are multiple possible solutions on how to implement the filtering. I
+chose one that reads closely to the problem instruction.
+The question whether to reduce or to apply a variadic function is for
+wiser people to discuss, both produce the same result.">
+
+<meta property="og:url" content="https://oneiromantica.github.io/posts/2022-03-28-codewars-multiples-of-3-or-5/" />
+<meta property="og:title" content="Codewars: Multiples of 3 or 5 - Clojure" />
+<meta property="og:type" content="article" />
+
+    <link rel="canonical" href="https://oneiromantica.github.io/posts/2022-03-28-codewars-multiples-of-3-or-5/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    />
+
+    <!-- Place favicon.ico in the root directory -->
+    <script src="/js/prism.js" type="application/javascript"></script>
+    <!-- -->
+    <link href="/css/prism.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/milligram.min.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="navigation">
+        <nav class="navbar pure-menu-horizontal">
+          <a href="/" class="pure-menu-heading">Lambda Library</a>
+          <ul class="pure-menu-list">
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/archives/">Code</a>
+            </li>
+            
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/pages/about/"
+                >About</a
+              >
+            </li>
+            
+          </ul>
+        </nav>
+      </header>
+      <main class="content container">
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">28 March 2022</div>
+        
+    </div>
+    <h2>Codewars: Multiples of 3 or 5 - Clojure</h2>
+</div>
+<div>
+    
+    <p>An easy problem, and like most data stream processing problems a
+perfect fit for functional programming.</p><p>There are multiple possible solutions on how to implement the filtering. I
+chose one that reads closely to the problem instruction.<br />
+The question whether to <code>reduce</code> or to <code>apply</code> a variadic function is for
+wiser people to discuss, both produce the same result.</p><h3 id="the-problem">The problem</h3><p>Given an exclusive upper limit, find all number between zero and that limit
+that are divisible by either three or five and sum them up.</p><h3 id="my-solution">My solution</h3><pre><code class="language-clojure">(defn solution [number]
+  (-&gt;&gt; (range number)
+       (filter #(some zero? [(mod % 3) (mod % 5)]))
+       (apply +)))
+</code></pre><p>This one is straightforward. The collection-threading-macro <code>-&gt;&gt;</code> makes the
+code easy on the eye, and the code itself reads just like a description of
+the problem.<br />
+As we all once learned, a natural number <code>n</code> is divisible by <code>k</code> if the
+remainder of <code>n / k</code> is equal to <code>0</code>, and the modulus operation calculates
+that remainder.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags/clojure/">clojure</a>
+    
+    <a href="/tags/codewars/">codewars</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts/2022-04-01-pyramid-slide-down/">&laquo; Codewars: Pyramid Slide Down - Clojure</a>
+        
+        
+        <a class="right" href="/posts/2014-03-10-first-post/">AOC2021 Day 1 - Haskell &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+</main>
+      <footer class="footer">
+        <span id="copyright" />
+      </footer>
+    </div>
+  </body>
+  <script>
+    document.getElementById(
+      "copyright"
+    ).textContent = `\u00A9 ${new Date().getFullYear()} by oneiromantica`;
+  </script>
+</html>

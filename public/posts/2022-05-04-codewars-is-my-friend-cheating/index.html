@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lambda Library: Codewars: Is my friend cheating? - Clojure</title>
+    
+<meta name="keywords" content="clojure,codewars,aoc,haskell,aoc2021">
+
+<meta name="description" content="One of those that makes you think &quot;this is far too easy to be true&quot;. And you&#39;re right!The problem">
+
+<meta property="og:description" content="One of those that makes you think &quot;this is far too easy to be true&quot;. And you&#39;re right!The problem">
+
+<meta property="og:url" content="https://oneiromantica.github.io/posts/2022-05-04-codewars-is-my-friend-cheating/" />
+<meta property="og:title" content="Codewars: Is my friend cheating? - Clojure" />
+<meta property="og:type" content="article" />
+
+    <link rel="canonical" href="https://oneiromantica.github.io/posts/2022-05-04-codewars-is-my-friend-cheating/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    />
+
+    <!-- Place favicon.ico in the root directory -->
+    <script src="/js/prism.js" type="application/javascript"></script>
+    <!-- -->
+    <link href="/css/prism.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/milligram.min.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="navigation">
+        <nav class="navbar pure-menu-horizontal">
+          <a href="/" class="pure-menu-heading">Lambda Library</a>
+          <ul class="pure-menu-list">
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/archives/">Code</a>
+            </li>
+            
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/pages/about/"
+                >About</a
+              >
+            </li>
+            
+          </ul>
+        </nav>
+      </header>
+      <main class="content container">
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">4 May 2022</div>
+        
+    </div>
+    <h2>Codewars: Is my friend cheating? - Clojure</h2>
+</div>
+<div>
+    
+    <p>One of those that makes you think "this is far too easy to be true". And you're right!</p><h3 id="the-problem">The problem</h3><p>Given an upper limit <code>n</code>, you are to give a list of tuples of numbers <code>(a, b)</code> for which <code>a * b</code> equals the sum of <code>[1, n]</code> minus the sum of <code>a</code> and <code>b</code> (or the empty list if there are none).</p><h3 id="my-solution">My solution</h3><p>At first glance this is a simple task, so I write it the most naive way possible, despite knowing that the quadratic execution time will get the tests to time out later on. Clojure's <code>for</code> construct makes the solution look quite elegant.</p><pre><code class="language-clojure">(defn solve [n]
+  (let [ns (range 1 (inc n))
+        s (apply + ns)]
+    (for [a ns, b ns
+          :when (= (* a b) (- s a b))]
+      [a b])))
+</code></pre><p>This is basically a literal translation of the task - get all tuples where <code>a * b = (sum 1, n) - (a + b)</code>, and as it iterates all values <code>a, b</code> to build the tuples, it takes <code>O(n * n)</code> to evaluate.</p><p>As predicted, the full test suite contains <code>n = 1000003</code>, which tests <code>1e12</code> possible tuples and times out (being curious I tried to time it on my local REPL, but killed the process after some minutes).</p><p>So we need to get faster.</p><h3 id="improving-performance">Improving performance</h3><h4 id="typical-cs-solutions">"Typical" CS solutions</h4><p>We could try optimising the loop. When we start the range for <code>b</code> at <code>a + 1</code>, we can get the number of tests down by half. Then we need to add all tuples <code>[(a,b), (b,a)]</code> to the result set. But now we need to flatten the results (pairs of tuples) and order them by increasing <code>a</code>, then increasing <code>b</code>. This is a lot of overhead, and additional we will only gain <code>n * n / 2 = O(n * n)</code> execution time, so there is barely anything to win.</p><p>We could go around, filtering the set of possible values for <code>b</code> by removing known hits/misses from running through <code>a</code>, but this will not get better than the first idea, plus adding a lot of work to constantly modify lists. And the code will get ugly.</p><p>So we need to do something scary: we need to use maths.</p><h4 id="thinking-less-like-a-cs-person">Thinking less like a CS person</h4><p>What we really want is to solve the equation <code>a * b = s - a - b</code> for a given <code>s</code> and <code>a,b ∈ [1..n]</code>
+We get out pen and paper and start:</p><ul><li><code>a * b = s - a - b</code> with <code>a,b ∈ [1..n]</code></li><li><code>a * b + b = s - a</code></li><li><code>b (a + 1) = s - a</code></li><li><code>b = (s - a) / (a + 1)</code> for <code>b ∈ [1..n]</code></li></ul><p>Now, that's something we can work with! We can derive a candidate value for <code>b</code> from <code>a</code>, so we do not need to run any loops for <code>b</code> at all, improving our execution time to <code>O(n)</code>. In the case of the <code>n = 1000003</code>, that's an improvement by six orders of magnitude. This got to be at least a little faster ;)</p><p>Now, let's change the Clojure <code>for</code> to reflect our insights:</p><pre><code class="language-clojure">(defn solve-linear [n]
+  (let [ns (range 1 (inc n))
+        s (apply + ns)]
+    (for [a ns
+          :let [b (/ (- s a) (inc a))]
+          :when (and (integer? b) (&lt;= 1 b n) (not= a b))]
+      [a b])))
+</code></pre><p>Which requires only 5ms for <code>n = 1000003</code> on my machine.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags/clojure/">clojure</a>
+    
+    <a href="/tags/codewars/">codewars</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        
+        <a class="right" href="/posts/2022-04-07-strings-mix/">Codewars: Strings Mix - Clojure &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+</main>
+      <footer class="footer">
+        <span id="copyright" />
+      </footer>
+    </div>
+  </body>
+  <script>
+    document.getElementById(
+      "copyright"
+    ).textContent = `\u00A9 ${new Date().getFullYear()} by oneiromantica`;
+  </script>
+</html>

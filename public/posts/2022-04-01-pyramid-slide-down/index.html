@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lambda Library: Codewars: Pyramid Slide Down - Clojure</title>
+    
+<meta name="keywords" content="clojure,codewars,aoc,haskell,aoc2021">
+
+<meta name="description" content="A nice little problem, reminding me of my studies in bioinformatics.The Problem">
+
+<meta property="og:description" content="A nice little problem, reminding me of my studies in bioinformatics.The Problem">
+
+<meta property="og:url" content="https://oneiromantica.github.io/posts/2022-04-01-pyramid-slide-down/" />
+<meta property="og:title" content="Codewars: Pyramid Slide Down - Clojure" />
+<meta property="og:type" content="article" />
+
+    <link rel="canonical" href="https://oneiromantica.github.io/posts/2022-04-01-pyramid-slide-down/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    />
+
+    <!-- Place favicon.ico in the root directory -->
+    <script src="/js/prism.js" type="application/javascript"></script>
+    <!-- -->
+    <link href="/css/prism.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/milligram.min.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="navigation">
+        <nav class="navbar pure-menu-horizontal">
+          <a href="/" class="pure-menu-heading">Lambda Library</a>
+          <ul class="pure-menu-list">
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/archives/">Code</a>
+            </li>
+            
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/pages/about/"
+                >About</a
+              >
+            </li>
+            
+          </ul>
+        </nav>
+      </header>
+      <main class="content container">
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">1 April 2022</div>
+        
+    </div>
+    <h2>Codewars: Pyramid Slide Down - Clojure</h2>
+</div>
+<div>
+    
+    <p>A nice little problem, reminding me of my studies in bioinformatics.</p><h3 id="the-problem">The Problem</h3><p>There is a pyramid of numbers, the goal is to descend from the top by
+"sliding" over adjacent neighbours and finish with the greatest sum.<br />
+The description explicitly announces that huge inputs are used to
+discourage any brute force attempts (test runs time out after 12s, btw).</p><h3 id="my-solution">My solution</h3><p>I elaborated a little on the basics of sequence alignment scoring ideas
+formalised by Smith &amp; Waterman or Needleman &amp; Wunsch. The simplicity
+of the problem allows leaving out the more complex parts of their
+algorithms.</p><p>The basic idea is to walk through the pyramid and always find the maximum
+possible distance for every single position by adding the current position's
+value to the maximum value of both adjacent position in the row above us.</p><pre><code>input   | row 1    | row 2
+        |          |
+   3    |     3    |             3
+  7 4   |  7+3 4+3 |     10             7
+ 2 4 6  |   ...    | 10+2  max(10+4,7+4) 7+6
+8 5 9 3 |          |                         
+</code></pre><p>Thus, we can find the maximum in a single pass of <code>O(h * h/2)</code> with the
+pyramid's height <code>h</code>.</p><pre><code class="language-clojure">(defn get-upper-neighbours [dists column]
+  [(get dists (dec column) 0)
+   (get dists column 0)])
+
+(defn longest-slide-down [pyramid]
+  (let [height (count pyramid)
+        dists (reduce (fn [ds row]
+                        (mapv #(+ (get-in pyramid [row %] 0))
+                                  (apply max (get-upper-neighbours ds %))
+                              (range (inc row))))
+                      []
+                      (range (inc height)))]
+    (apply max dists)))
+</code></pre><p>As we're only interested in the largest number inside the last row, we do
+not need to store the whole distance pyramid in memory, it suffices to
+only return the last row.</p><p>A more concise approach would be to invert the pyramid, partition each row
+into tuples and add the bigger neighbour to the next row's value.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags/clojure/">clojure</a>
+    
+    <a href="/tags/codewars/">codewars</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts/2022-04-05-rgb-to-hex-conversion/">&laquo; Codewars: RGB to hex conversion - Clojure</a>
+        
+        
+        <a class="right" href="/posts/2022-03-28-codewars-multiples-of-3-or-5/">Codewars: Multiples of 3 or 5 - Clojure &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+</main>
+      <footer class="footer">
+        <span id="copyright" />
+      </footer>
+    </div>
+  </body>
+  <script>
+    document.getElementById(
+      "copyright"
+    ).textContent = `\u00A9 ${new Date().getFullYear()} by oneiromantica`;
+  </script>
+</html>

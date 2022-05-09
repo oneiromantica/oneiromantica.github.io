@@ -1,0 +1,24 @@
+.navigation {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 1;
+  box-shadow: 0 1px 5px 0 lightgray;
+}
+
+.wrapper {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
+.footer {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  margin-top: 7rem;
+}

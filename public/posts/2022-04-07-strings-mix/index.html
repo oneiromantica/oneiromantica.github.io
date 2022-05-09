@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lambda Library: Codewars: Strings Mix - Clojure</title>
+    
+<meta name="keywords" content="clojure,codewars,aoc,haskell,aoc2021">
+
+<meta name="description" content="A very strange sorting task, indeed. Once again, it&#39;s very suited for
+functional programming, and the capabilities of Clojure make short work
+for it.The Problem">
+
+<meta property="og:description" content="A very strange sorting task, indeed. Once again, it&#39;s very suited for
+functional programming, and the capabilities of Clojure make short work
+for it.The Problem">
+
+<meta property="og:url" content="https://oneiromantica.github.io/posts/2022-04-07-strings-mix/" />
+<meta property="og:title" content="Codewars: Strings Mix - Clojure" />
+<meta property="og:type" content="article" />
+
+    <link rel="canonical" href="https://oneiromantica.github.io/posts/2022-04-07-strings-mix/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    />
+
+    <!-- Place favicon.ico in the root directory -->
+    <script src="/js/prism.js" type="application/javascript"></script>
+    <!-- -->
+    <link href="/css/prism.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/milligram.min.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="navigation">
+        <nav class="navbar pure-menu-horizontal">
+          <a href="/" class="pure-menu-heading">Lambda Library</a>
+          <ul class="pure-menu-list">
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/archives/">Code</a>
+            </li>
+            
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/pages/about/"
+                >About</a
+              >
+            </li>
+            
+          </ul>
+        </nav>
+      </header>
+      <main class="content container">
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">7 April 2022</div>
+        
+    </div>
+    <h2>Codewars: Strings Mix - Clojure</h2>
+</div>
+<div>
+    
+    <p>A very strange sorting task, indeed. Once again, it's very suited for
+functional programming, and the capabilities of Clojure make short work
+for it.</p><h3 id="the-problem">The Problem</h3><p>Given two strings, you have to do the following:</p><ul><li>Compare their similarity by counting the maximum number each letter appears in either string</li><li>Return a string describing the similarity</li></ul><p>Rules for similarity:</p><ul><li>Only consider lower case letters <code>a-z</code></li><li>Only consider letters which appear more than once on either string</li></ul><p>Rules to build the report string</p><ul><li>Sort fragments for each letter descending by the maximum</li><li>On equal length, sort the fragments ascending (string-comparison)</li><li>Output format:
+<ul><li><code>1</code>, <code>2</code>, or <code>=</code> to describe if the maximum was found in string 1, string 2 or if it was a tie</li><li>A colon</li><li>The letter, repeated as often as its maximum</li></ul></li></ul><h3 id="my-solution">My solution</h3><p>I had to read the instructions multiple times, but once I got the gist, implementation was a lot
+less daunting.</p><p>The basic idea is to present the intermediate values as tuples <code>[original string, count, char]</code>, so
+we can use destructuring and threading.</p><pre><code class="language-clojure">(defn freqs [s]
+  (frequencies (re-seq #"[a-z]" s))) ;; count appearances of all valid chars
+
+(defn mix [s1 s2]
+  (let [f1 (freqs s1)
+        f2 (freqs s2)
+        ks (into (set (keys f1)) (set (keys f2)))]    ;; get all keys in any word
+    (-&gt;&gt; ks
+         (map #(let [n1 (get f1 % 0)
+                     n2 (get f2 % 0)]
+                 (cond (&gt; n1 n2) [1 n1 %]
+                       (&gt; n2 n1) [2 n2 %]
+                       :else     ["=" n1 %])))        ;; create our tuples
+         (filter (fn [[_ n]] (&gt; n 1)))                ;; only keep valid ones
+         (sort-by (fn [[s n v]] [(- n) (str s v)]))   ;; sort by length and string value
+         (map (fn [[sgn n v]]                         ;; build result fragments
+                (str sgn ":" (clojure.string/join (repeat n v)))))
+         (clojure.string/join "/"))))
+</code></pre>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags/clojure/">clojure</a>
+    
+    <a href="/tags/codewars/">codewars</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts/2022-05-04-codewars-is-my-friend-cheating/">&laquo; Codewars: Is my friend cheating? - Clojure</a>
+        
+        
+        <a class="right" href="/posts/2022-04-05-rgb-to-hex-conversion/">Codewars: RGB to hex conversion - Clojure &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+</main>
+      <footer class="footer">
+        <span id="copyright" />
+      </footer>
+    </div>
+  </body>
+  <script>
+    document.getElementById(
+      "copyright"
+    ).textContent = `\u00A9 ${new Date().getFullYear()} by oneiromantica`;
+  </script>
+</html>

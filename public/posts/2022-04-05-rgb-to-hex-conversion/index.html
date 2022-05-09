@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lambda Library: Codewars: RGB to hex conversion - Clojure</title>
+    
+<meta name="keywords" content="clojure,codewars,aoc,haskell,aoc2021">
+
+<meta name="description" content="A quickie to do while waiting for the company&#39;s daily meeting to start.The Problem">
+
+<meta property="og:description" content="A quickie to do while waiting for the company&#39;s daily meeting to start.The Problem">
+
+<meta property="og:url" content="https://oneiromantica.github.io/posts/2022-04-05-rgb-to-hex-conversion/" />
+<meta property="og:title" content="Codewars: RGB to hex conversion - Clojure" />
+<meta property="og:type" content="article" />
+
+    <link rel="canonical" href="https://oneiromantica.github.io/posts/2022-04-05-rgb-to-hex-conversion/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    />
+
+    <!-- Place favicon.ico in the root directory -->
+    <script src="/js/prism.js" type="application/javascript"></script>
+    <!-- -->
+    <link href="/css/prism.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/milligram.min.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="navigation">
+        <nav class="navbar pure-menu-horizontal">
+          <a href="/" class="pure-menu-heading">Lambda Library</a>
+          <ul class="pure-menu-list">
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/archives/">Code</a>
+            </li>
+            
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/pages/about/"
+                >About</a
+              >
+            </li>
+            
+          </ul>
+        </nav>
+      </header>
+      <main class="content container">
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">5 April 2022</div>
+        
+    </div>
+    <h2>Codewars: RGB to hex conversion - Clojure</h2>
+</div>
+<div>
+    
+    <p>A quickie to do while waiting for the company's daily meeting to start.</p><h3 id="the-problem">The Problem</h3><p>You are given three decimal integers <code>r</code>, <code>g</code>, and <code>b</code> and are to create an upper case
+hexadeximal color string from them.</p><h3 id="my-solution">My solution</h3><p>There is a number of ways for converting decimals to hex. If you want to practise your
+maths, you can do the base transformation by hand, you can use <code>Integer/toHexString</code>,
+but if you're familiar with them (or can't be bothered), the most concise way is
+to just use string formatting: <code>(format "%02X" n)</code>, where <code>%02</code> means "ensure two digits",
+and the format <code>X</code> is for "uppercase hexadeximal", in contrast to <code>x</code>, its lowercase
+sibling.</p><p>Bear in mind that the input may be outside the valid range <code>[0, 255]</code>.</p><pre><code class="language-clojure">(defn clamp [lower upper n] (max lower (min upper n)))
+
+(defn rgb [r g b]
+  (apply format "%02X%02X%02X" (map (partial clamp 0 255) [r g b])))
+</code></pre><p>I'm the first to admit that <code>clamp</code> is too general for that specific problem, as there
+is only one set of upper and lower limits. Making it take parametric limits came out of habit.</p><pre><code class="language-clojure">(defn clamp-hex [n] (max 0 (min 255 n)))
+
+(defn rgb [r g b]
+  (apply format "%02X%02X%02X" (map clamp-hex [r g b])))
+</code></pre><p>Is a little less over-engineered.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags/clojure/">clojure</a>
+    
+    <a href="/tags/codewars/">codewars</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts/2022-04-07-strings-mix/">&laquo; Codewars: Strings Mix - Clojure</a>
+        
+        
+        <a class="right" href="/posts/2022-04-01-pyramid-slide-down/">Codewars: Pyramid Slide Down - Clojure &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+</main>
+      <footer class="footer">
+        <span id="copyright" />
+      </footer>
+    </div>
+  </body>
+  <script>
+    document.getElementById(
+      "copyright"
+    ).textContent = `\u00A9 ${new Date().getFullYear()} by oneiromantica`;
+  </script>
+</html>
