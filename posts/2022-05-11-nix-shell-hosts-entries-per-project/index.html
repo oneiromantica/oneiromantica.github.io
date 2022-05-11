@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lambda Library: nix-shell - Use per-project host entries</title>
+    
+<meta name="keywords" content="linux,nix,clojure,codewars">
+
+<meta name="description" content="...because who wants to clobber their /etc/hosts with project-specific entries.The problem">
+
+<meta property="og:description" content="...because who wants to clobber their /etc/hosts with project-specific entries.The problem">
+
+<meta property="og:url" content="https://oneiromantica.github.io/posts/2022-05-11-nix-shell-hosts-entries-per-project/" />
+<meta property="og:title" content="nix-shell - Use per-project host entries" />
+<meta property="og:type" content="article" />
+
+    <link rel="canonical" href="https://oneiromantica.github.io/posts/2022-05-11-nix-shell-hosts-entries-per-project/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    />
+
+    <!-- Place favicon.ico in the root directory -->
+    <script src="/js/prism.js" type="application/javascript"></script>
+    <!-- -->
+    <link href="/css/prism.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/milligram.min.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="navigation">
+        <nav class="navbar pure-menu-horizontal">
+          <a href="/" class="pure-menu-heading">Lambda Library</a>
+          <ul class="pure-menu-list">
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/archives/">Code</a>
+            </li>
+            
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/pages/about/"
+                >About</a
+              >
+            </li>
+            
+          </ul>
+        </nav>
+      </header>
+      <main class="content container">
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">11 May 2022</div>
+        
+    </div>
+    <h2>nix-shell - Use per-project host entries</h2>
+</div>
+<div>
+    
+    <p>...because who wants to clobber their <code>/etc/hosts</code> with project-specific entries.</p><h3 id="the-problem">The problem</h3><p>One of my projects is deployed as a docker container (well, actually most of them are).<br />
+It connects to other containers, referring to them via docker-network names as host names,
+set up in a project-wide configuration file.</p><p>Locally I use live hot reloading to develop, which is all very well, until I need to test
+changes that include talking to other containers.<br />
+To test such behaviour, there are three default approaches:</p><ul><li>Compile everything, rebuild the container and fire up all projects with <code>docker-compose</code><ul><li>Not well suited for quick iterations</li></ul></li><li>Modify the configuration file - requires a lot of discipline
+<ul><li>When forgotten it requires to stop dev-mode, modify the config and re-start everything</li><li>Accidentally committing local changes may break production systems</li><li>Git-ignoring the config may break production systems when there really are changes to commit</li></ul></li><li>Modify the local machine's <code>/etc/hosts</code><ul><li>Project-specific settings permeate into the whole machine</li><li>Requires super user privileges</li><li>Magic solutions that are easily forgotten when on-boarding new team members</li></ul></li></ul><h3 id="my-solution">My solution</h3><p>I already use <code>shell.nix</code> files for all my projects, to keep development environments
+self-contained and transferable, so why not use that.</p><p>Searching the web led to two solutions:</p><ul><li>Providing a <code>HOSTALIAS</code> env-parameter. This is deprecated and also only ever worked on a subset of applications.</li><li>Using <a href="https://github.com/figiel/hosts">userhosts</a>, which has some quirks but works quite well</li></ul><p>I integrated "userhosts" in my <code>shell.nix</code>, and the result went really well. It requires three steps:</p><ul><li>Provide a file in <code>hostfile</code> format</li><li>Set the <code>LD_PRELOAD</code> variable to point to the <code>libuserhosts.so</code> file</li><li>Point <code>HOSTS_FILE</code> to our hosts file</li></ul><pre><code class="language-nix">{ pkgs ? import &lt;nixpkgs&gt; { } }:
+
+let
+  myHostsFile = pkgs.writeText "hostsFile" ''
+    0.0.0.0 docker-network-1
+    0.0.0.0 some-other-docker-network
+  '';
+in {
+  buildInputs = with pkgs; [ userhosts ];
+  
+  shellHook = ''
+    export LD_PRELOAD=${pkgs.userhosts}/lib/libuserhosts.so
+    export HOSTS_FILE=${myHostsFile}
+  '';
+}
+</code></pre><p>Nb:</p><p>I like exporting env variables in the <code>shellHook</code>, but one could also set them as attributes of the derivation.</p><p>This also helps with testing websites/-apps locally without dynamically rewriting all link targets.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags/linux/">linux</a>
+    
+    <a href="/tags/nix/">nix</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        
+        <a class="right" href="/posts/2022-05-04-codewars-is-my-friend-cheating/">Codewars: Is my friend cheating? - Clojure &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+</main>
+      <footer class="footer">
+        <span id="copyright" />
+      </footer>
+    </div>
+  </body>
+  <script>
+    document.getElementById(
+      "copyright"
+    ).textContent = `\u00A9 ${new Date().getFullYear()} by oneiromantica`;
+  </script>
+</html>
