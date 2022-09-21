@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lambda Library: Codewars: Validate sudoku solution</title>
+    
+<meta name="keywords" content="clojure,codewars,linux,nix">
+
+<meta name="description" content="I started wondering where all the array- or sudoku puzzles had hidden, and lo
+here&#39;s one of them.The problem">
+
+<meta property="og:description" content="I started wondering where all the array- or sudoku puzzles had hidden, and lo
+here&#39;s one of them.The problem">
+
+<meta property="og:url" content="https://oneiromantica.github.io/posts/2022-09-21-sudoku-validator-clojure/" />
+<meta property="og:title" content="Codewars: Validate sudoku solution" />
+<meta property="og:type" content="article" />
+
+    <link rel="canonical" href="https://oneiromantica.github.io/posts/2022-09-21-sudoku-validator-clojure/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    />
+
+    <!-- Place favicon.ico in the root directory -->
+    <script src="/js/prism.js" type="application/javascript"></script>
+    <!-- -->
+    <link href="/css/prism.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/milligram.min.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="navigation">
+        <nav class="navbar pure-menu-horizontal">
+          <a href="/" class="pure-menu-heading">Lambda Library</a>
+          <ul class="pure-menu-list">
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/archives/">Code</a>
+            </li>
+            
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/pages/about/"
+                >About</a
+              >
+            </li>
+            
+          </ul>
+        </nav>
+      </header>
+      <main class="content container">
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">21 September 2022</div>
+        
+    </div>
+    <h2>Codewars: Validate sudoku solution</h2>
+</div>
+<div>
+    
+    <p>I started wondering where all the array- or sudoku puzzles had hidden, and lo
+here's one of them.</p><h3 id="the-problem">The problem</h3><p>We should check if given 2D array (passed as vector of vectors) is a valid
+solution for a <a href="https://en.wikipedia.org/wiki/Sudoku">sudoku</a> puzzle.</p><p>This means that every row, every column and every of the nine 3x3 sections of
+the grid contains all numbers from 1 to 9 exactly once.</p><h3 id="my-solution">My solution</h3><p>This one is a bit less succinct than it could be because I decided to structure
+the solution to some helper functions.<br />
+I once more started with translating the rules to code:</p><pre><code class="clojure">(defn valid-block? [block]
+  (= (set (range 1 10)) (set block)))
+  
+(defn valid-solution [board]
+  (and (every? valid-block? board)
+       (every? valid-block? (columns board))
+       (every? valid-block? (squres board))))
+</code></pre><p>Getting the columns is not too complicated, either:</p><pre><code class="clojure">(defn columns [m]
+  (apply map vector m))
+</code></pre><p>Here we use <code>apply</code> to pass each row of the board as argument to <code>map vector</code>
+and take advantage of the multi-arity nature of <code>map</code>; that is when map is given
+a number of sequences, it uses the n-th elements of every sequence as arguments
+in the n-th step. In this context, we first apply <code>vector</code> to build a sequence
+of the first elements of all rows, then a vector of the second, and so on.<br />
+Incidentally, that is how to idiomatically transpose a matrix in Clojure.</p><p>Now what's left is getting the individual 3x3 squares:</p><pre><code class="clojure">(defn squares [m]
+   (-&gt;&gt; (map (partial partition 3) m)
+        columns
+        flatten
+        (partition 9))
+</code></pre><p>This roughly translates to:</p><ul><li>split all rows to three-tuples
+<pre><code>[[[11 12 13] [14 15 16] [17 18 18]]
+ [[21 22 23] [24 25 25] ..]
+ ..]```
+</code></pre></li><li>transpose the matrix of three tuples
+<pre><code>[[[11 12 13] [21 23 24] [31 32 34]]
+ [[14 15 16] [24 ...]]
+ ..]
+</code></pre></li><li>then merge the tuples of all rows to a sequence of sequences with nine numbers
+each</li></ul><p>And that's all there is to validate a given sudoku solution.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags/clojure/">clojure</a>
+    
+    <a href="/tags/codewars/">codewars</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        
+        <a class="right" href="/posts/2022-05-11-nix-shell-hosts-entries-per-project/">nix-shell - Use per-project host entries &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+</main>
+      <footer class="footer">
+        <span id="copyright" />
+      </footer>
+    </div>
+  </body>
+  <script>
+    document.getElementById(
+      "copyright"
+    ).textContent = `\u00A9 ${new Date().getFullYear()} by oneiromantica`;
+  </script>
+</html>
