@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lambda Library: Codewars - Winning a round of NIM the game</title>
+    
+<meta name="keywords" content="clojure,codewars,linux,nix">
+
+<meta name="description" content="We are challenged to a game of Nim, a
+mathematical game about taking stuff from a pile. And we are expected to win, of
+course!The problem">
+
+<meta property="og:description" content="We are challenged to a game of Nim, a
+mathematical game about taking stuff from a pile. And we are expected to win, of
+course!The problem">
+
+<meta property="og:url" content="https://oneiromantica.github.io/posts/2022-09-23-win-the-nim/" />
+<meta property="og:title" content="Codewars - Winning a round of NIM the game" />
+<meta property="og:type" content="article" />
+
+    <link rel="canonical" href="https://oneiromantica.github.io/posts/2022-09-23-win-the-nim/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    />
+
+    <!-- Place favicon.ico in the root directory -->
+    <script src="/js/prism.js" type="application/javascript"></script>
+    <!-- -->
+    <link href="/css/prism.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/milligram.min.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="navigation">
+        <nav class="navbar pure-menu-horizontal">
+          <a href="/" class="pure-menu-heading">Lambda Library</a>
+          <ul class="pure-menu-list">
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/archives/">Code</a>
+            </li>
+            
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/pages/about/"
+                >About</a
+              >
+            </li>
+            
+          </ul>
+        </nav>
+      </header>
+      <main class="content container">
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">23 September 2022</div>
+        
+    </div>
+    <h2>Codewars - Winning a round of NIM the game</h2>
+</div>
+<div>
+    
+    <p>We are challenged to a game of <a href="https://en.wikipedia.org/wiki/Nim">Nim</a>, a
+mathematical game about taking stuff from a pile. And we are expected to win, of
+course!</p><h3 id="the-problem">The problem</h3><p>We have a number of stacks of... things. Matches, coins, pebbles, pearls...<br />
+Two players take turns, each taking any positive number of things from a single pile.<br />
+Whoever takes the last item is the winner.</p><h3 id="the-solution">The solution</h3><p>An algorithm to winning exists, and it requires the notion of a <em>Nim-sum</em>:</p><blockquote><p>The Nim-sum is the result of reducing the sizes of all stacks by bit-wise
+<code>xor</code></p></blockquote><p>So how to win?</p><ul><li>If the <em>Nim-sum</em> at the beginning of your move is not zero, you are in a
+winning position. Especially, when there is only one stack left, you can take
+all of its items to win.</li><li>If you are in a beginning position at the start of your turn, you can always
+choose a move to ensure that the <em>Nim-sum</em> is zero after your move.</li><li>If the <em>Nim-sum</em> at the beginning of your move is zero, there is no way to
+take items from a single stack so it is still zero after your move. You are in
+a losing position until your opponent makes a mistake and leaves the board
+with a positive <em>Nim-sum</em> after his move.</li></ul><pre><code class="clojure">(defn choose-move [stacks]
+  (let [nim-sum (apply bit-xor stacks)
+        winning-position? (pos? nim-sum)
+
+        ai-options
+        {:winning-move {:filter (fn [[_ straws]]
+                                 (and (pos? straws) ;; don't take from empty stacks
+                                      (&lt; (bit-xor nim-sum straws) straws)))
+                        :move   (fn [[idx straws]]
+                                  [idx (- straws (bit-xor nim-sum straws))])}
+         :lurking-move {:filter (comp pos? second) ;; any non-empty
+                        :move   (fn [[idx straws]]
+                                 [idx (inc (rand-int (dec straws)))])}}
+        ai (if winning-position?
+            ;; we can't lose now!
+            (:winning-move ai-options)
+            ;; oh blast... we need to wait patiently
+            (:lurking-move ai-options))]
+
+    (-&gt;&gt; stacks
+         (map-indexed (fn [idx straws] [idx straws]))
+         (filter (:filter ai))
+         first
+         ((:move ai)))))
+</code></pre><p>After submitting the solution, I saw that the game would always start us in a
+winning configuration, so there really is no need to write the whole game logic
+in the first place as we can always keep winning.</p><pre><code class="clojure">(defn play-winning-nim [stacks]
+  (let [nim-sum (apply bit-xor stacks)]
+    (-&gt;&gt; stacks
+         (map-indexed (fn [idx straws] [idx straws]))
+         (filter (fn [[_ straws]]
+                     (and (pos? straws) (&lt; (bit-xor nim-sum straws) straws))))
+         first
+         (fn [[idx straws]]
+             [idx (- straws (bit-xor nim-sum straws))]))))
+</code></pre>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags/clojure/">clojure</a>
+    
+    <a href="/tags/codewars/">codewars</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        
+        <a class="right" href="/posts/2022-09-21-sudoku-validator-clojure/">Codewars: Validate sudoku solution &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+</main>
+      <footer class="footer">
+        <span id="copyright" />
+      </footer>
+    </div>
+  </body>
+  <script>
+    document.getElementById(
+      "copyright"
+    ).textContent = `\u00A9 ${new Date().getFullYear()} by oneiromantica`;
+  </script>
+</html>
