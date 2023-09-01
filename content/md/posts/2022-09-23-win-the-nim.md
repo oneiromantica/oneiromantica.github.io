@@ -31,7 +31,7 @@ So how to win?
   a losing position until your opponent makes a mistake and leaves the board
   with a positive _Nim-sum_ after his move.
 
-```clojure
+```language-clojure
 (defn choose-move [stacks]
   (let [nim-sum (apply bit-xor stacks)
         winning-position? (pos? nim-sum)
@@ -62,7 +62,7 @@ After submitting the solution, I saw that the game would always start us in a
 winning configuration, so there really is no need to write the whole game logic
 in the first place as we can always keep winning.
 
-```clojure
+```language-clojure
 (defn play-winning-nim [stacks]
   (let [nim-sum (apply bit-xor stacks)]
     (->> stacks

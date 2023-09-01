@@ -21,7 +21,7 @@ both Fibonacci and "tribonacci" were instances of an n-bonacci problem, so why
 not follow the course of "solve the class of problems and specialise for your
 case" pattern we're advised to use.
 
-```clojure
+```language-clojure
 (defn n-bonacci [s n]
   (let [step
         (fn [summands]
@@ -38,7 +38,7 @@ Here we define a step function which takes a vector of arbitrary length and
 creates the input vector for the next step by shifting it to the left and
 appending the current step's value (the sum of the input) to the result.
 
-```clojure
+```language-clojure
 [[0 0 1], [0 1 1], [1 1 2], ...]
 ```
 
@@ -51,7 +51,7 @@ complete sequence.
 
 ### Results
 
-```clojure
+```language-clojure
 ;; classical fibonacci
 (n-bonacci [1 1] 10)
 ; [1 1 2 3 5 8 13 21 34 55]

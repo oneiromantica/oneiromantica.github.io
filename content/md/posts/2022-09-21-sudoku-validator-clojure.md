@@ -19,7 +19,7 @@ This one is a bit less succinct than it could be because I decided to structure
 the solution to some helper functions.  
 I once more started with translating the rules to code:
 
-```clojure
+```language-clojure
 (defn valid-block? [block]
   (= (set (range 1 10)) (set block)))
   
@@ -31,7 +31,7 @@ I once more started with translating the rules to code:
 
 Getting the columns is not too complicated, either:
 
-```clojure
+```language-clojure
 (defn columns [m]
   (apply map vector m))
 ```
@@ -45,7 +45,7 @@ Incidentally, that is how to idiomatically transpose a matrix in Clojure.
 
 Now what's left is getting the individual 3x3 squares:
 
-```clojure
+```language-clojure
 (defn squares [m]
    (->> (map (partial partition 3) m)
         columns
