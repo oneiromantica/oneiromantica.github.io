@@ -86,7 +86,7 @@ predecessors.</p><h3 id="my-solution">My solution</h3><p>One could go a relative
 the first values given. On the other hand, the problem description told that
 both Fibonacci and "tribonacci" were instances of an n-bonacci problem, so why
 not follow the course of "solve the class of problems and specialise for your
-case" pattern we're advised to use.</p><pre><code class="clojure">(defn n-bonacci [s n]
+case" pattern we're advised to use.</p><pre><code class="language-clojure">(defn n-bonacci [s n]
   (let [step
         (fn [summands]
           (let [sum (apply + summands)]
@@ -98,11 +98,11 @@ case" pattern we're advised to use.</p><pre><code class="clojure">(defn n-bonacc
        (take n))))
 </code></pre><p>Here we define a step function which takes a vector of arbitrary length and
 creates the input vector for the next step by shifting it to the left and
-appending the current step's value (the sum of the input) to the result.</p><pre><code class="clojure">[[0 0 1], [0 1 1], [1 1 2], ...]
+appending the current step's value (the sum of the input) to the result.</p><pre><code class="language-clojure">[[0 0 1], [0 1 1], [1 1 2], ...]
 </code></pre><p>To get the desired n-bonacci number for each position, we map <code>last</code> over the
 result, as a result of how our step function works.</p><p>As we only calculate values following the initial n-tuple, we need to
 concatenate them to the seeding n-tuple used to create the sequence to get the
-complete sequence.</p><h3 id="results">Results</h3><pre><code class="clojure">;; classical fibonacci
+complete sequence.</p><h3 id="results">Results</h3><pre><code class="language-clojure">;; classical fibonacci
 (n-bonacci [1 1] 10)
 ; [1 1 2 3 5 8 13 21 34 55]
 

@@ -88,7 +88,7 @@ all of its items to win.</li><li>If you are in a beginning position at the start
 choose a move to ensure that the <em>Nim-sum</em> is zero after your move.</li><li>If the <em>Nim-sum</em> at the beginning of your move is zero, there is no way to
 take items from a single stack so it is still zero after your move. You are in
 a losing position until your opponent makes a mistake and leaves the board
-with a positive <em>Nim-sum</em> after his move.</li></ul><pre><code class="clojure">(defn choose-move [stacks]
+with a positive <em>Nim-sum</em> after his move.</li></ul><pre><code class="language-clojure">(defn choose-move [stacks]
   (let [nim-sum (apply bit-xor stacks)
         winning-position? (pos? nim-sum)
 
@@ -114,7 +114,7 @@ with a positive <em>Nim-sum</em> after his move.</li></ul><pre><code class="cloj
          ((:move ai)))))
 </code></pre><p>After submitting the solution, I saw that the game would always start us in a
 winning configuration, so there really is no need to write the whole game logic
-in the first place as we can always keep winning.</p><pre><code class="clojure">(defn play-winning-nim [stacks]
+in the first place as we can always keep winning.</p><pre><code class="language-clojure">(defn play-winning-nim [stacks]
   (let [nim-sum (apply bit-xor stacks)]
     (-&gt;&gt; stacks
          (map-indexed (fn [idx straws] [idx straws]))

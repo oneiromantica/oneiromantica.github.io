@@ -80,21 +80,21 @@ here's one of them.</p><h3 id="the-problem">The problem</h3><p>We should check i
 solution for a <a href="https://en.wikipedia.org/wiki/Sudoku">sudoku</a> puzzle.</p><p>This means that every row, every column and every of the nine 3x3 sections of
 the grid contains all numbers from 1 to 9 exactly once.</p><h3 id="my-solution">My solution</h3><p>This one is a bit less succinct than it could be because I decided to structure
 the solution to some helper functions.<br />
-I once more started with translating the rules to code:</p><pre><code class="clojure">(defn valid-block? [block]
+I once more started with translating the rules to code:</p><pre><code class="language-clojure">(defn valid-block? [block]
   (= (set (range 1 10)) (set block)))
   
 (defn valid-solution [board]
   (and (every? valid-block? board)
        (every? valid-block? (columns board))
        (every? valid-block? (squres board))))
-</code></pre><p>Getting the columns is not too complicated, either:</p><pre><code class="clojure">(defn columns [m]
+</code></pre><p>Getting the columns is not too complicated, either:</p><pre><code class="language-clojure">(defn columns [m]
   (apply map vector m))
 </code></pre><p>Here we use <code>apply</code> to pass each row of the board as argument to <code>map vector</code>
 and take advantage of the multi-arity nature of <code>map</code>; that is when map is given
 a number of sequences, it uses the n-th elements of every sequence as arguments
 in the n-th step. In this context, we first apply <code>vector</code> to build a sequence
 of the first elements of all rows, then a vector of the second, and so on.<br />
-Incidentally, that is how to idiomatically transpose a matrix in Clojure.</p><p>Now what's left is getting the individual 3x3 squares:</p><pre><code class="clojure">(defn squares [m]
+Incidentally, that is how to idiomatically transpose a matrix in Clojure.</p><p>Now what's left is getting the individual 3x3 squares:</p><pre><code class="language-clojure">(defn squares [m]
    (-&gt;&gt; (map (partial partition 3) m)
         columns
         flatten
