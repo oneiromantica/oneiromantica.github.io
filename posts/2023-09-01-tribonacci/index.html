@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <title>Lambda Library: Codewars: Tribonacci - Clojure</title>
+    
+<meta name="keywords" content="clojure,codewars,linux,nix">
+
+<meta name="description" content="Some finicky maths, expanding on the Fibonacci problem. I usually dislike maths
+problems, as they do not really test one&#39;s computer skills, but this one was
+somewhat intriguing.The problem">
+
+<meta property="og:description" content="Some finicky maths, expanding on the Fibonacci problem. I usually dislike maths
+problems, as they do not really test one&#39;s computer skills, but this one was
+somewhat intriguing.The problem">
+
+<meta property="og:url" content="https://oneiromantica.github.io/posts/2023-09-01-tribonacci/" />
+<meta property="og:title" content="Codewars: Tribonacci - Clojure" />
+<meta property="og:type" content="article" />
+
+    <link rel="canonical" href="https://oneiromantica.github.io/posts/2023-09-01-tribonacci/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.1.0/build/pure-min.css"
+    />
+
+    <!-- Place favicon.ico in the root directory -->
+    <script src="/js/prism.js" type="application/javascript"></script>
+    <!-- -->
+    <link href="/css/prism.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/milligram.min.css" rel="stylesheet" type="text/css" />
+    <!-- -->
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="navigation">
+        <nav class="navbar pure-menu-horizontal">
+          <a href="/" class="pure-menu-heading">Lambda Library</a>
+          <ul class="pure-menu-list">
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/archives/">Code</a>
+            </li>
+            
+            <li
+              class="
+                pure-menu-item
+                
+              "
+            >
+              <a class="pure-menu-link" href="/pages/about/"
+                >About</a
+              >
+            </li>
+            
+          </ul>
+        </nav>
+      </header>
+      <main class="content container">
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">1 September 2023</div>
+        
+    </div>
+    <h2>Codewars: Tribonacci - Clojure</h2>
+</div>
+<div>
+    
+    <p>Some finicky maths, expanding on the Fibonacci problem. I usually dislike maths
+problems, as they do not really test one's computer skills, but this one was
+somewhat intriguing.</p><h3 id="the-problem">The problem</h3><p>Instead of the common Fibonacci sequence, creating a sequence of numbers by
+adding its two predecessors in the sequence, usually starting from <code>[0, 1]</code> or
+<code>[1, 1]</code>, we are asked to generate the sequence by adding its three
+predecessors.</p><h3 id="my-solution">My solution</h3><p>One could go a relative straightforward way by destructuring and starting with
+the first values given. On the other hand, the problem description told that
+both Fibonacci and "tribonacci" were instances of an n-bonacci problem, so why
+not follow the course of "solve the class of problems and specialise for your
+case" pattern we're advised to use.</p><pre><code class="clojure">(defn n-bonacci [s n]
+  (let [step
+        (fn [summands]
+          (let [sum (apply + summands)]
+            (prn summands sum)
+            (conj (vec (rest summands)) sum)))]
+    (-&gt;&gt; (iterate step (step s))
+       (map last)
+       (concat s)
+       (take n))))
+</code></pre><p>Here we define a step function which takes a vector of arbitrary length and
+creates the input vector for the next step by shifting it to the left and
+appending the current step's value (the sum of the input) to the result.</p><pre><code class="clojure">[[0 0 1], [0 1 1], [1 1 2], ...]
+</code></pre><p>To get the desired n-bonacci number for each position, we map <code>last</code> over the
+result, as a result of how our step function works.</p><p>As we only calculate values following the initial n-tuple, we need to
+concatenate them to the seeding n-tuple used to create the sequence to get the
+complete sequence.</p><h3 id="results">Results</h3><pre><code class="clojure">;; classical fibonacci
+(n-bonacci [1 1] 10)
+; [1 1 2 3 5 8 13 21 34 55]
+
+;; one of Codewars' test cases
+(n-bonacci [0 0 1] 10)
+; [0 0 1 1 2 4 7 13 24 44]
+</code></pre>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags/clojure/">clojure</a>
+    
+    <a href="/tags/codewars/">codewars</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        
+        <a class="right" href="/posts/2022-09-23-win-the-nim/">Codewars - Winning a round of NIM the game &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+</main>
+      <footer class="footer">
+        <span id="copyright" />
+      </footer>
+    </div>
+  </body>
+  <script>
+    document.getElementById(
+      "copyright"
+    ).textContent = `\u00A9 ${new Date().getFullYear()} by oneiromantica`;
+  </script>
+</html>
